@@ -1,0 +1,72 @@
+#include <Arduino.h>
+#include <IRremote.hpp>
+
+#define IR_SEND_PIN 2  // GPIO pin for IR LED
+
+// Samsung IR Address
+uint16_t sAddress = 0x7;
+
+// Codes for samsung TV
+uint8_t CMD_POWER = 0x2;  // Power On/Off toggle
+uint8_t CMD_RIGHT = 0x62; // Right button
+uint8_t CMD_LEFT = 0x65;  // Left button
+uint8_t CMD_UP = 0x60;    // Up button
+uint8_t CMD_DOWN = 0x61;  // Down button
+uint8_t CMD_ENTER = 0x68; // Enter button
+uint8_t CMD_VOLUMEUP = 0x7;  // Volume Up button
+
+void sendCommand(uint8_t command, uint8_t times = 1, uint16_t delay_ms = 2000) {
+    for (uint8_t i = 0; i < times; i++) {
+        Serial.print(F("Sending command: "));
+        Serial.println(command, HEX);
+        IrSender.sendSamsung(sAddress, command, 0);
+        delay(delay_ms);
+    }
+}
+
+void setup() {
+    Serial.begin(115200);
+    Serial.println(F("Samsung TV IR Sequence Sender"));
+
+    // Initialize IR sender
+    IrSender.begin(IR_SEND_PIN, true, LED_BUILTIN);
+
+    // Power On the TV (send power toggle command once)
+    Serial.println(F("Powering on TV..."));
+    sendCommand(CMD_POWER, 1, 7000);
+    
+    ////////////////////IMPORTANT!!!!/////////////////////
+    // this is the delay before the the script starts controlling the tv change it to adjust the time it turns the tv on
+    delay(60000);
+
+    
+    // This sequence will open youtube and search and play never gonna give you up this sequence should work for most samsung tvs but may need adjusted depending on the specific tv you want to control
+    sendCommand(CMD_RIGHT, 7, 1000);    
+    sendCommand(CMD_ENTER, 1, 9000);    
+    sendCommand(CMD_LEFT, 1, 1000);     
+    sendCommand(CMD_UP, 1, 1500);      
+    sendCommand(CMD_RIGHT, 5, 500);   
+    sendCommand(CMD_DOWN, 2, 500);     
+    sendCommand(CMD_ENTER, 1, 500);     
+    sendCommand(CMD_LEFT, 2, 500);     
+    sendCommand(CMD_UP, 1, 500);       
+    sendCommand(CMD_ENTER, 1, 500);     
+    sendCommand(CMD_RIGHT, 1, 500);    
+    sendCommand(CMD_UP, 1, 500);       
+    sendCommand(CMD_ENTER, 1, 500);     
+    sendCommand(CMD_DOWN, 1, 500);     
+    sendCommand(CMD_RIGHT, 1, 500);    
+    sendCommand(CMD_ENTER, 1, 500);    
+    sendCommand(CMD_DOWN, 3, 500);     
+    sendCommand(CMD_ENTER, 1, 500);     
+    sendCommand(CMD_UP, 2, 500);       
+    sendCommand(CMD_ENTER, 1, 500);     
+    sendCommand(CMD_LEFT, 4, 1000);     
+    sendCommand(CMD_ENTER, 1, 1000);    
+    sendCommand(CMD_VOLUMEUP, 100, 200); 
+    sendCommand(CMD_ENTER, 1, 1000);    
+}
+
+void loop() {
+
+}
